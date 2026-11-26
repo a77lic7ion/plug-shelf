@@ -2,6 +2,7 @@
 live/
 __pycache__/
 *.log
+edits.json.pre-sync
 
 # Internal screenshots: addresses and an API-key field
 assets/omarchy-server-kill_preview*.png

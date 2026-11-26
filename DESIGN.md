@@ -5,13 +5,12 @@ description: A restrained, instrument-like catalogue for Shaun's Omarchy shell p
 colors:
   primary: "#0B0C0E"
   secondary: "#15181B"
-  tertiary: "#E8875A"
+  tertiary: "#61D6FF"
   neutral: "#F1EDE6"
   on-primary: "#F1EDE6"
-  on-tertiary: "#14100D"
+  on-tertiary: "#071017"
   muted: "#9A9C99"
   line: "#2A2E32"
-  signal: "#61D6FF"
   success: "#86D993"
   warning: "#E2C275"
 typography:
@@ -93,8 +92,8 @@ components:
     rounded: "{rounded.full}"
     padding: 3px
   accent-signal:
-    backgroundColor: "{colors.signal}"
-    textColor: "{colors.primary}"
+    backgroundColor: "{colors.tertiary}"
+    textColor: "{colors.on-tertiary}"
     rounded: "{rounded.sm}"
     padding: 0
 ---
@@ -107,18 +106,17 @@ the state, move on) but rejects its masthead-and-carousel composition. The page
 reads like a well-kept workbench index: numbered entries, hairline dividers,
 monospace metadata, and one accent used only for action and focus.
 
-Two accent modes share the same geometry. **Ember** uses the warm copper
-tertiary token and sits closest to the Omarchy marketplace's warmth without
-copying its orange. **Signal** uses the cyan token from the Hermarchy design
-system already on this machine, for a cooler instrument-panel reading.
+One accent mode only. **Signal** uses the cyan from the Hermarchy design system
+already on this machine: near-black canvas, bone text, and a single interaction
+colour for focus, active filters and copy feedback. No warm alternate, no theme
+toggle.
 
 ## Colors
 
 - **Primary (#0B0C0E):** Near-black canvas and inspector backdrop.
 - **Secondary (#15181B):** Raised surfaces: cards, filter rail, inspector.
-- **Tertiary (#E8875A):** Sole interaction driver in Ember mode: focus rings,
-  active filters, copy feedback. Never a background wash.
-- **Signal (#61D6FF):** Alternate interaction driver in Signal mode.
+- **Tertiary (#61D6FF):** Sole interaction driver: focus rings, active filters,
+  copy feedback and the selected card. Never a background wash.
 - **Neutral (#F1EDE6):** Warm bone text, not pure white.
 - **Muted (#9A9C99):** Metadata, captions, inactive labels.
 - **Line (#2A2E32):** Hairline borders; structure without boxes.

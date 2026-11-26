@@ -3,16 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230b0c0e'/%3E%3Ctext x='16' y='23' font-family='monospace' font-size='19' fill='%23e8875a' text-anchor='middle'%3E%5B%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230b0c0e'/%3E%3Ctext x='16' y='23' font-family='monospace' font-size='19' fill='%2361d6ff' text-anchor='middle'%3E%5B%3C/text%3E%3C/svg%3E">
 <title>Plug Shelf · Shaun Gordon</title>
 <style>
 :root{
   --bg:#0b0c0e;--surface:#15181b;--surface2:#1b1f23;--line:#2a2e32;--soft:#22262a;
-  --text:#f1ede6;--muted:#9a9c99;--accent:#e8875a;--accent-ink:#14100d;
+  --text:#f1ede6;--muted:#9a9c99;--accent:#61d6ff;--accent-ink:#071017;
   --success:#86d993;--warn:#e2c275;--mono:"JetBrainsMono Nerd Font","Noto Sans Mono",ui-monospace,monospace;
   --sans:"Liberation Sans",Inter,system-ui,-apple-system,sans-serif;--r:3px;
 }
-body[data-theme="signal"]{--accent:#61d6ff;--accent-ink:#071017}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
@@ -27,9 +26,6 @@ a{color:var(--accent);text-decoration:none}
 .bar .context{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
 .bar-right{margin-left:auto;display:flex;align-items:center;gap:14px}
 .clock{font-family:var(--mono);font-size:11px;color:var(--muted)}
-.theme{display:flex;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
-.theme button{background:none;border:0;color:var(--muted);font-family:var(--mono);font-size:10px;letter-spacing:.08em;padding:7px 10px;text-transform:uppercase}
-.theme button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:700}
 main{max-width:1360px;margin:0 auto;padding:0 26px}
 .mast{padding:52px 0 36px;border-bottom:1px solid var(--line);position:relative}
 .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin:0 0 16px}
@@ -144,8 +140,7 @@ input[type=file]{display:none}
  .bar{padding:0 12px;gap:8px}.bar .context{display:none}.clock{display:none}
  .tool-btn{padding:7px 6px;font-size:0;width:36px;flex:none}
  #btn-edit::after{content:"E";font-size:10px}body.editing #btn-edit::after{content:"D"}
- #btn-export::after{content:"X";font-size:10px}
- .theme button{padding:7px 6px;font-size:9px}
+ #btn-sync::after{content:"S";font-size:10px}
  main{padding:0 14px}.entries{grid-template-columns:1fr}
  .copy,.inspect{min-height:44px}.sheet-scroll{padding:20px 18px 50px}
 }
@@ -155,18 +150,14 @@ input[type=file]{display:none}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
-<body data-theme="ember">
+<body>
 <header class="bar">
   <div class="mark"><span class="sig">[::]</span> PLUG SHELF</div>
   <div class="context">Shaun Gordon / shell registry</div>
   <div class="bar-right">
     <button class="tool-btn" id="btn-edit" title="Edit plugin details and screenshots">Edit shelf</button>
-    <button class="tool-btn" id="btn-export" title="Download your edits as edits.json">Export</button>
+    <button class="tool-btn" id="btn-sync" title="Push latest edits to GitHub">Sync to GitHub</button>
     <span class="clock" id="clock">--:--</span>
-    <div class="theme" role="group" aria-label="Accent mode">
-      <button id="btn-ember" aria-pressed="true">Ember</button>
-      <button id="btn-signal" aria-pressed="false">Signal</button>
-    </div>
   </div>
 </header>
 <main>
@@ -434,10 +425,22 @@ async function applyFiles(files,slug,index){
 let sheetReturn=null;
 function closeSheet(){$("#sheet").classList.remove("open");$("#backdrop").classList.remove("open");$("#sheet").setAttribute("aria-hidden","true");document.body.classList.remove("locked");if(sheetReturn&&sheetReturn.focus)sheetReturn.focus();}
 function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("show"),1600);}
-function exportEdits(){
+function downloadEdits(){
   const blob=new Blob([JSON.stringify(localEdits,null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="edits.json";document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(a.href),1500);toast("edits.json downloaded");
+}
+async function syncToGitHub(){
+  const btn=$("#btn-sync");if(btn.disabled)return;
+  const old=btn.textContent;btn.disabled=true;btn.textContent="Syncing...";
+  try{
+    const res=await fetch("/api/sync",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(localEdits)});
+    const out=await res.json().catch(()=>({}));
+    if(!res.ok)throw new Error(out.error||("HTTP "+res.status));
+    toast(out.status==="unchanged"?"Already up to date":("Synced "+out.commit+" to GitHub"));
+  }catch(err){
+    downloadEdits();toast("Sync unavailable - edits.json downloaded instead");
+  }finally{btn.disabled=false;btn.textContent=old;}
 }
 function toggleEdit(on){
   state.editing=on;document.body.classList.toggle("editing",on);
@@ -450,7 +453,7 @@ document.addEventListener("click",async e=>{
   if(c){try{await navigator.clipboard.writeText(c.dataset.cmd);}catch(_){const ta=document.createElement("textarea");ta.value=c.dataset.cmd;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();}
     const old=c.textContent;c.textContent="Copied";c.classList.add("done");toast("Install command copied");setTimeout(()=>{c.textContent=old;c.classList.remove("done");},1500);return;}
   if(e.target.id==="btn-edit"){toggleEdit(!state.editing);return;}
-  if(e.target.id==="btn-export"){exportEdits();return;}
+  if(e.target.id==="btn-sync"){syncToGitHub();return;}
   const m=e.target.closest("[data-mode]");if(m){state.mode=m.dataset.mode;openSheet(state.current,state.mode);return;}
   const eo=e.target.closest("[data-edit-one]");if(eo){openSheet(eo.dataset.editOne,"edit");return;}
   if(e.target.closest("#btn-preview")){openSheet(state.current,"read");return;}
@@ -479,8 +482,6 @@ document.addEventListener("keydown",e=>{
   if(e.key==="/"&&!/input|textarea/i.test(document.activeElement.tagName)){e.preventDefault();$("#q").focus();}
 });
 document.addEventListener("keypress",e=>{if(e.key==="Enter"&&e.target.classList.contains("entry"))openSheet(e.target.dataset.slug);});
-function setTheme(t){document.body.dataset.theme=t;$("#btn-ember").setAttribute("aria-pressed",t==="ember");$("#btn-signal").setAttribute("aria-pressed",t==="signal");}
-$("#btn-ember").addEventListener("click",()=>setTheme("ember"));$("#btn-signal").addEventListener("click",()=>setTheme("signal"));
 function tick(){$("#clock").textContent=new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})+" SAST";}
 tick();setInterval(tick,30000);
 async function boot(){

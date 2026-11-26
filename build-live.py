@@ -11,7 +11,7 @@ html = (root / "index.html").read_text()
 
 remove = [
     '    <button class="tool-btn" id="btn-edit" title="Edit plugin details and screenshots">Edit shelf</button>\n',
-    '    <button class="tool-btn" id="btn-export" title="Download your edits as edits.json">Export</button>\n',
+    '    <button class="tool-btn" id="btn-sync" title="Push latest edits to GitHub">Sync to GitHub</button>\n',
 ]
 for snippet in remove:
     if snippet not in html:
@@ -72,4 +72,4 @@ for src in sorted((root / "assets").iterdir()):
 print(f"Built {live / 'index.html'}")
 print(f"Copied {len(copied)} screenshots; omitted Server Kill captures")
 print(f"Omitted {hidden} edited screenshots with private or off-topic content")
-print("Edit shelf and Export controls removed")
+print("Edit shelf and Sync controls removed")

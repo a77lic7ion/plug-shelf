@@ -24,19 +24,24 @@ The editable copy runs locally on port 8902 on this machine. The exact laptop, W
 5. Click **Preview** to see exactly what visitors will see, including the copyable code block for the install command.
 6. Click **Reset this plugin** to throw away your changes for that one plugin only.
 
-Edits stay in this browser until you export them. That is intentional: nothing is sent anywhere.
+Edits stay in this browser until you sync them. Nothing is sent anywhere before you press the button, and no GitHub credential is stored in the browser or the repo.
 
-## Publish your edits
+## Sync your edits to GitHub
 
-1. Click **Export** in the top right. A file called `edits.json` is downloaded.
-2. Copy that file into this project folder, replacing the existing `edits.json` (currently just `{}`).
-3. Reload the page. Everyone who opens the site now sees your changes.
+The local server (`sync_server.py`) is already running on port 8902. It serves this site and handles the sync endpoint.
 
-If your browser still shows the old version, your local edits are taking priority. Use **Reset this plugin** for the affected plugin, or clear this site's storage in the browser. Published changes in `edits.json` are the source of truth for visitors.
+1. Click **Sync to GitHub** in the top right.
+2. The helper compares your browser edits with `edits.json`. If nothing changed, it says "Already up to date".
+3. If something changed, it saves a backup as `edits.json.pre-sync`, commits **only `edits.json`**, pushes to GitHub, rebuilds the public folder and redeploys to Vercel.
+4. The button reports the short commit hash when done.
+
+Sync works only from this laptop (loopback). Viewing on a phone is read-only. If the helper is unavailable, the button falls back to downloading `edits.json` so nothing is lost.
+
+If your browser still shows old content after a sync, hard-refresh the public site. Published changes in `edits.json` are the source of truth for visitors.
 
 ## Public build
 
-`build-live.py` generates `live/`: the same site with **Edit shelf** and **Export** removed, two screenshots held back, and no local edit controls. The held-back captures are the GW2 API key settings panel and a stray browser-tab screenshot. That folder is what Vercel serves. The editable copy stays on this machine with all original and added images.
+`build-live.py` generates `live/`: the same site with **Edit shelf** and **Sync to GitHub** removed, two screenshots held back, and no local edit controls. The held-back captures are the GW2 API key settings panel and a stray browser-tab screenshot. That folder is what Vercel serves. The editable copy stays on this machine with all original and added images.
 
 To host: upload the generated `live/` folder to any static host, or import the repo into Vercel, which runs the build script and serves `live/`. No configuration or secrets are needed.
 
@@ -47,6 +52,7 @@ To host: upload the generated `live/` folder to any static host, or import the r
 - `edits.json` — published overrides, one entry per plugin slug
 - `assets/` — screenshots shipped with the first version
 - `build-live.py` — regenerates the read-only public build
+- `sync_server.py` — local server and GitHub sync helper; no credentials inside
 - `live/` — generated public build; do not hand-edit
 
 ## Keyboard
