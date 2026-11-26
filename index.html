@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230b0c0e'/%3E%3Ctext x='16' y='23' font-family='monospace' font-size='19' fill='%23e8875a' text-anchor='middle'%3E%5B%3C/text%3E%3C/svg%3E">
+<title>Plug Shelf · Shaun Gordon</title>
+<style>
+:root{
+  --bg:#0b0c0e;--surface:#15181b;--surface2:#1b1f23;--line:#2a2e32;--soft:#22262a;
+  --text:#f1ede6;--muted:#9a9c99;--accent:#e8875a;--accent-ink:#14100d;
+  --success:#86d993;--warn:#e2c275;--mono:"JetBrainsMono Nerd Font","Noto Sans Mono",ui-monospace,monospace;
+  --sans:"Liberation Sans",Inter,system-ui,-apple-system,sans-serif;--r:3px;
+}
+body[data-theme="signal"]{--accent:#61d6ff;--accent-ink:#071017}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button,input{font:inherit}
+button{cursor:pointer}
+a{color:var(--accent);text-decoration:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--mono)}
+.bar{height:54px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 26px;position:sticky;top:0;background:rgba(11,12,14,.96);backdrop-filter:blur(6px);z-index:20}
+.mark{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.02em;font-size:15px;white-space:nowrap}
+.mark .sig{font-family:var(--mono);color:var(--accent);font-size:18px;line-height:1}
+.bar .context{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.bar-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.clock{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.theme{display:flex;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.theme button{background:none;border:0;color:var(--muted);font-family:var(--mono);font-size:10px;letter-spacing:.08em;padding:7px 10px;text-transform:uppercase}
+.theme button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:700}
+main{max-width:1360px;margin:0 auto;padding:0 26px}
+.mast{padding:52px 0 36px;border-bottom:1px solid var(--line);position:relative}
+.eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin:0 0 16px}
+.mast h1{font-size:clamp(40px,5.4vw,68px);line-height:1.02;letter-spacing:-.045em;font-weight:700;margin:0;max-width:14ch}
+.mast h1 em{font-style:normal;color:var(--muted)}
+.mast-sub{max-width:52ch;color:var(--muted);margin:18px 0 0;font-size:15px}
+.mast-meta{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.mast-meta b{color:var(--text);font-weight:700}
+.mast-meta .pip{color:var(--accent)}
+.workbench{display:grid;grid-template-columns:214px minmax(0,1fr);gap:30px;padding:28px 0 60px;align-items:start}
+.rail{position:sticky;top:82px}
+.rail-block{margin-bottom:24px}
+.rail-label{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--muted);margin:0 0 9px;text-transform:uppercase}
+.search{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);padding:10px 11px;border-radius:var(--r)}
+.search input{background:none;border:0;outline:none;color:var(--text);width:100%;font-family:var(--mono);font-size:12px}
+.search kbd{font-family:var(--mono);font-size:10px;color:var(--muted);border:1px solid var(--soft);padding:1px 5px;border-radius:2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:var(--r);padding:7px 10px;font-family:var(--mono);font-size:10.5px;letter-spacing:.02em;text-transform:uppercase;min-height:34px}
+.chip:hover{color:var(--text);border-color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.rail-foot{border-top:1px solid var(--line);padding-top:14px;font-family:var(--mono);font-size:10.5px;color:var(--muted);line-height:1.8}
+.rail-foot b{color:var(--text)}
+.catalog-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:16px;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+.entries{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px}
+.entry{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;transition:border-color .16s,transform .16s}
+.entry:hover{border-color:var(--muted);transform:translateY(-2px)}
+.entry-top{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-bottom:1px solid var(--soft);font-family:var(--mono);font-size:10px;color:var(--muted)}
+.num{color:var(--accent)}
+.state{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--line);padding:2px 7px;border-radius:20px;color:var(--muted)}
+.state.listed{color:var(--success);border-color:#385b43}
+.state.submitted{color:var(--warn);border-color:#5a4d2c}
+.state.local{color:var(--muted)}
+.thumb{aspect-ratio:16/8.4;background:#0e1012;border-bottom:1px solid var(--soft);overflow:hidden;position:relative}
+.thumb img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;filter:saturate(.85)}
+.thumb.blank{display:grid;place-items:center;background:repeating-linear-gradient(90deg,#101214 0 1px,transparent 1px 22px)}
+.blank-mark{font-family:var(--mono);font-size:30px;color:#343a40;letter-spacing:-.06em}
+.blank-tag{position:absolute;bottom:8px;left:10px;font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:#555c63}
+.entry-body{padding:14px 14px 12px;display:flex;flex-direction:column;gap:8px;flex:1}
+.entry h3{font-size:17px;line-height:1.2;margin:0;letter-spacing:-.015em}
+.entry .pid{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin:0}
+.entry .desc{font-size:13px;color:#c8c7c2;margin:0;flex:1}
+.tags{display:flex;gap:5px;flex-wrap:wrap}
+.tag{font-family:var(--mono);font-size:9.5px;color:var(--muted);border:1px solid var(--soft);padding:2px 6px;border-radius:2px}
+.entry-foot{border-top:1px solid var(--soft);padding-top:11px;margin-top:2px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.copy{border:1px solid var(--line);background:var(--surface2);color:var(--text);border-radius:var(--r);padding:8px 11px;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;min-height:38px;white-space:nowrap}
+.copy:hover{border-color:var(--accent);color:var(--accent)}
+.copy.done{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+.inspect{background:none;border:0;color:var(--muted);font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;padding:8px 2px;min-height:38px}
+.inspect:hover{color:var(--accent)}
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.66);opacity:0;pointer-events:none;transition:opacity .2s;z-index:30}
+.backdrop.open{opacity:1;pointer-events:auto}
+.sheet{position:fixed;top:0;right:0;height:100vh;width:min(640px,100%);background:var(--surface);border-left:1px solid var(--line);z-index:31;transform:translateX(101%);transition:transform .22s ease;display:flex;flex-direction:column}
+.sheet.open{transform:none}
+.sheet-head{height:54px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;flex:none}
+.close{background:none;border:1px solid var(--line);color:var(--text);border-radius:var(--r);width:34px;height:34px;font-size:17px;line-height:1}
+.close:hover{border-color:var(--accent);color:var(--accent)}
+.sheet-scroll{overflow:auto;padding:26px 28px 60px}
+.sheet h2{font-size:34px;line-height:1.1;letter-spacing:-.035em;margin:0 0 8px}
+.sheet .idline{font-family:var(--mono);font-size:11px;color:var(--muted);margin:0 0 20px}
+.sheet .lead{font-size:16px;color:#d9d7d1;margin:0 0 20px}
+.sheet h3{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:28px 0 10px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.sheet ul{padding-left:19px;margin:0;color:#c8c7c2;font-size:14px}
+.sheet li{margin:7px 0}
+.shot{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin:10px 0;background:#0e1012}
+.shot img{display:block;width:100%;height:auto}
+.shot figcaption{font-family:var(--mono);font-size:10px;color:var(--muted);padding:8px 10px;border-top:1px solid var(--line)}
+.sheet pre{position:relative;background:#0e1012;border:1px solid var(--line);border-radius:var(--r);padding:15px;margin:0;overflow:auto}
+.sheet pre code{font-family:var(--mono);font-size:12px;color:var(--text);word-break:break-all;padding-right:90px;display:block;line-height:1.7}
+.sheet pre .copy{position:absolute;top:8px;right:8px}
+.files{display:flex;flex-wrap:wrap;gap:6px}
+.file{font-family:var(--mono);font-size:10.5px;color:var(--muted);border:1px solid var(--soft);border-radius:2px;padding:4px 7px}
+footer{border-top:1px solid var(--line);padding:22px 26px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,14px);background:var(--surface2);border:1px solid var(--accent);color:var(--text);border-radius:var(--r);padding:10px 16px;font-family:var(--mono);font-size:11px;opacity:0;pointer-events:none;transition:.18s;z-index:40}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+body.locked{overflow:hidden}
+/* editing */
+.tool-btn{background:none;border:1px solid var(--line);color:var(--muted);border-radius:var(--r);padding:8px 10px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;min-height:34px}
+.tool-btn:hover{color:var(--text);border-color:var(--muted)}
+.tool-btn.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+.edit-link{display:none}
+body.editing .edit-link{display:inline-block}
+body.editing .entry{border-style:dashed}
+body.editing .entry:hover{border-style:solid}
+.sheet-tabs{display:flex;gap:6px;margin:0 0 20px}
+.sheet-tabs .chip{min-height:30px}
+.editor label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 7px}
+.editor textarea,.editor input[type=text]{width:100%;background:#0e1012;border:1px solid var(--line);border-radius:var(--r);color:var(--text);padding:10px;font-family:var(--mono);font-size:12px;line-height:1.6}
+.editor textarea{min-height:96px;resize:vertical}
+.field-row{margin-bottom:20px}
+.hint{font-size:11px;color:var(--muted);margin:6px 0 0}
+.img-row{display:flex;gap:10px;align-items:center;border:1px solid var(--line);padding:8px;margin-bottom:8px;border-radius:var(--r);background:#0e1012}
+.img-row img{width:76px;height:48px;object-fit:cover;border:1px solid var(--soft);flex:none}
+.img-row .img-meta{flex:1;min-width:0}
+.img-row input[type=text]{width:100%;padding:6px 8px;font-size:11px}
+.img-actions{display:flex;flex-direction:column;gap:5px}
+.mini{border:1px solid var(--line);background:var(--surface2);color:var(--muted);border-radius:var(--r);font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:5px 7px;min-height:26px}
+.mini:hover{border-color:var(--accent);color:var(--accent)}
+.mini.danger:hover{border-color:#c97070;color:#c97070}
+.add-shot{display:block;border:1px dashed var(--line);border-radius:var(--r);padding:14px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;cursor:pointer;margin-top:8px}
+.add-shot:hover{border-color:var(--accent);color:var(--accent)}
+.editor-foot{display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:16px;margin-top:24px}
+.saved{font-family:var(--mono);font-size:10px;color:var(--success);margin-left:auto;align-self:center}
+input[type=file]{display:none}
+@media(max-width:900px){
+ .workbench{grid-template-columns:1fr;gap:20px}
+ .rail{position:static}
+ .rail-block{margin-bottom:16px}
+ .chips{gap:5px}
+ .mast{padding:38px 0 28px}
+}
+@media(max-width:520px){
+ .bar{padding:0 12px;gap:8px}.bar .context{display:none}.clock{display:none}
+ .tool-btn{padding:7px 6px;font-size:0;width:36px;flex:none}
+ #btn-edit::after{content:"E";font-size:10px}body.editing #btn-edit::after{content:"D"}
+ #btn-export::after{content:"X";font-size:10px}
+ .theme button{padding:7px 6px;font-size:9px}
+ main{padding:0 14px}.entries{grid-template-columns:1fr}
+ .copy,.inspect{min-height:44px}.sheet-scroll{padding:20px 18px 50px}
+}
+@media(max-width:400px){
+ .mark{font-size:0;gap:0}.mark .sig{font-size:18px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body data-theme="ember">
+<header class="bar">
+  <div class="mark"><span class="sig">[::]</span> PLUG SHELF</div>
+  <div class="context">Shaun Gordon / shell registry</div>
+  <div class="bar-right">
+    <button class="tool-btn" id="btn-edit" title="Edit plugin details and screenshots">Edit shelf</button>
+    <button class="tool-btn" id="btn-export" title="Download your edits as edits.json">Export</button>
+    <span class="clock" id="clock">--:--</span>
+    <div class="theme" role="group" aria-label="Accent mode">
+      <button id="btn-ember" aria-pressed="true">Ember</button>
+      <button id="btn-signal" aria-pressed="false">Signal</button>
+    </div>
+  </div>
+</header>
+<main>
+  <section class="mast">
+    <p class="eyebrow">Personal registry · preview</p>
+    <h1>Shell tools,<br><em>filed properly.</em></h1>
+    <p class="mast-sub">Eleven plugins built for the Omarchy Quattro shell. Filter the shelf, inspect a plugin, copy the install command. No account, no tracking, no fluff.</p>
+    <div class="mast-meta">
+      <span><b id="m-total">11</b> entries</span><span><span class="pip">/</span> <b id="m-public">7</b> public</span><span><span class="pip">/</span> <b id="m-local">4</b> local only</span><span><span class="pip">/</span> <b>design.md</b> driven</span>
+    </div>
+  </section>
+  <div class="workbench">
+    <aside class="rail" aria-label="Filters">
+      <div class="rail-block"><p class="rail-label">Find</p><label class="search"><span class="mono" style="color:var(--muted)">/</span><input id="q" placeholder="name, id, tag..." autocomplete="off"><kbd>/</kbd></label></div>
+      <div class="rail-block"><p class="rail-label">Kind</p><div class="chips" id="kinds"></div></div>
+      <div class="rail-block"><p class="rail-label">State</p><div class="chips" id="states"></div></div>
+      <div class="rail-block"><p class="rail-label">Order</p><div class="chips" id="orders"></div></div>
+      <div class="rail-foot"><b id="shown">11 / 11</b> shown<br>Esc closes the inspector<br>All commands copy locally</div>
+    </aside>
+    <section class="catalog">
+      <div class="catalog-head"><span>Index / 001 - 011</span><span id="view-label">Shelf view</span></div>
+      <div class="entries" id="entries"></div>
+    </section>
+  </div>
+</main>
+<div class="backdrop" id="backdrop"></div>
+<aside class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Plugin inspector" aria-hidden="true">
+  <div class="sheet-head"><span id="sheet-tag">PLUGIN / 001</span><button class="close" id="close" aria-label="Close inspector">×</button></div>
+  <div class="sheet-scroll" id="sheet-body"></div>
+</aside>
+<footer>Design preview · tokens in DESIGN.md · built from local plugin folders and public repositories · no credentials included</footer>
+<div class="toast" id="toast"></div>
+<script>
+const REPOS = [
+ {slug:"omarchy-server-kill",name:"Server Kill",id:"shaun.server-kill",version:"1.1.2",visibility:"Public",stars:0,forks:0,lang:"QML",color:"#41b883",updated:"19 Nov 2026",
+  desc:"Kill dev servers from the Omarchy bar - and keep them dead.",
+  topics:["omarchy","quickshell","qml","systemd","devtools"],
+  files:["BarWidget.qml","Panel.qml","Service.qml","bin/","stacks.json.example","manifest.json","README.md","LICENSE"],
+  features:["Lists every listening server with port, PID and local + Tailscale URLs","Kills systemd-backed servers by stopping the whole user service, so they stay stopped","Raw-process kills re-check the process start time first, so a recycled PID can never be killed by mistake","Stacks group related services under one card with a single Kill and Start","Auto-refreshes every 30 seconds; right-click the bar icon or press R to refresh"],
+  images:[{src:"assets/omarchy-server-kill_preview.png",caption:"Server Kill panel: grouped servers, ports, URLs and Kill buttons"}],
+  install:"omarchy plugin add https://github.com/a77lic7ion/omarchy-server-kill.git --enable",
+  notes:["Requires Omarchy with the Quattro shell and Python 3 (standard library only).","Optional: systemd user services, Docker for stacks, Tailscale for the Tail URLs.","Writes nothing outside the services you choose to stop."]},
+ {slug:"omarchy-plugin-updates",name:"Plugin Updates",id:"shaun.plugin-updater",version:"1.0.0",visibility:"Public",stars:3,forks:1,lang:"Shell",color:"#89e051",updated:"19 Nov 2026",
+  desc:"Check installed plugins against the revision the marketplace actually reviewed, then update only to that commit.",
+  topics:["omarchy","plugins","updates","supply-chain","security"],
+  files:["BarWidget.qml","Panel.qml","check-updates.sh","run-in-terminal.sh","manifest.json","README.md","LICENSE"],
+  features:["Bar icon with a badge counting plugins behind the reviewed revision","Panel groups behind / unchecked / unreviewed / up to date","Each row shows the exact reviewed commit it would install","Update opens a terminal with the command already typed - nothing runs until Enter","Update all runs one terminal per plugin, so one failure cannot abort the rest","Results are cached, so the badge appears at once after a shell restart"],
+  images:[{src:"assets/shaun.plugin-updater_preview.png",caption:"Plugin Updates panel: reviewed revision shown per plugin"}],
+  install:"omarchy plugin add https://github.com/a77lic7ion/omarchy-plugin-updates.git --enable",
+  notes:["Pinned to the marketplace's verificationCommit, never a moving branch head.","A dirty working tree or a local-ahead commit stops the update instead of moving backwards."]},
+ {slug:"omarchy-redragon-m908",name:"Redragon M908",id:"redragon-m908",version:"1.0.0",visibility:"Public",stars:2,forks:0,lang:"QML",color:"#41b883",updated:"26 Oct 2026",
+  desc:"Map all 13 remappable buttons of the Redragon M908 mouse and switch between named profiles.",
+  topics:["omarchy","mouse","gaming","hardware","profiles"],
+  files:["BarWidget.qml","Panel.qml","daemon/","manifest.json","README.md","LICENSE"],
+  features:["Visual diagram of the 12 side buttons and the top button","Remap a button by pressing a key, or by pressing the physical mouse button","Create, load and delete named profiles, each storing all 13 mappings","Restart the m908d daemon from the panel if the connection drops","Mappings apply system-wide, including in full-screen games"],
+  images:[{src:"assets/redragon-m908_preview.png",caption:"Redragon M908 button map and profile panel"}],
+  install:"omarchy plugin add https://github.com/a77lic7ion/omarchy-redragon-m908.git --enable",
+  notes:["Needs the m908d daemon from the repository's daemon/ folder running first.","The daemon is bundled in the same repo and pinned to the same commit as the panel."]},
+ {slug:"omarchy-gw2-trading-post",name:"GW2 Trading Post",id:"shaun.gw2-trading-post",version:"1.0.0",visibility:"Public",stars:1,forks:0,lang:"QML",color:"#41b883",updated:"25 Nov 2026",
+  desc:"Guild Wars 2 wallet gold and Wizard's Vault dailies on the Omarchy bar.",
+  topics:["guild-wars-2","omarchy","trading-post","api"],
+  files:["BarWidget.qml","Panel.qml","Model.js","manifest.json","README.md","LICENSE"],
+  features:["Wallet gold in the bar, in gold / silver / copper","Panel shows the account wallet balance and Wizard's Vault dailies","Auto-refreshes every 15 minutes, configurable","Right-click the bar icon for a wallet notification; middle-click to force a refresh","Settings panel for the GW2 API key, stored locally"],
+  images:[{src:"assets/shaun.gw2-trading-post_preview.png",caption:"GW2 panel: wallet and Wizard's Vault dailies"},{src:"assets/shaun.gw2-trading-post_preview-settings.jpg",caption:"API key settings panel"}],
+  install:"omarchy plugin add https://github.com/a77lic7ion/omarchy-gw2-trading-post.git --enable",
+  notes:["Needs a Guild Wars 2 API key with Account and Wallet permissions.","The token is passed through a temporary curl config file, never on the command line."]},
+ {slug:"omarchy-ai-desktop-agent",name:"AI Desktop Agent",id:"shaun.agent-pet",version:"0.2.0",visibility:"Public",stars:1,forks:0,lang:"QML",color:"#41b883",updated:"11 Nov 2026",
+  desc:"A small desk robot that types, waits and rings its bell as Hermes and OpenCode sessions change state.",
+  topics:["omarchy","ai-agents","hermes","opencode","desk-toy"],
+  files:["BarWidget.qml","Pet.qml","PetWindow.qml","Service.qml","assets/","bin/","hooks/","manifest.json","README.md","LICENSE"],
+  features:["Live pose per agent state: working (typing), waiting (needs input), done (bell)","Auto-hide: appears when work starts, hides when sessions end","Rings the bell when a turn finishes, then rests before hiding","Bar on/off switch and a draggable desk toy with gravity","Tracks multiple agents and sessions at once"],
+  images:[{src:"assets/omarchy-ai-desktop-agent_preview.png",caption:"Agent Pet states: working, waiting and done"},{src:"assets/webp_working.webp",caption:"Working pose"},{src:"assets/webp_waiting.webp",caption:"Waiting pose"},{src:"assets/webp_done.webp",caption:"Done pose"}],
+  install:"git clone https://github.com/a77lic7ion/omarchy-ai-desktop-agent.git ~/.config/omarchy/plugins/shaun.agent-pet && omarchy plugin enable shaun.agent-pet",
+  notes:["Hermes shell hooks and an OpenCode plugin push state to a Unix socket.","Config lives at ~/.config/agent-pet/config.json, outside the plugin folder."]},
+ {slug:"omarchy-overflow",name:"Overflow",id:"shaun.overflow",version:"1.0.0",visibility:"Public",stars:0,forks:0,lang:"QML",color:"#41b883",updated:"26 Nov 2026",
+  desc:"File bar icons into a drop-down panel that never collides with the app shortcuts.",
+  topics:["omarchy","bar","quickshell","ui"],
+  files:["BarWidget.qml","Panel.qml","Service.qml","OverflowModel.js","manifest.json","README.md","LICENSE"],
+  features:["Chevron in the bar shows how many icons are filed away","Three-column panel drops down (or up), never sideways","Add from the bar moves any enabled widget into the panel in one click","Put back returns an icon to its original bar section","Refresh rescans for widgets enabled after the panel opened"],
+  images:[],
+  install:"omarchy plugin add https://github.com/a77lic7ion/omarchy-overflow.git --enable",
+  notes:["Submitted to the Omarchy marketplace, issue #15967.","Screenshot not included in the source repository yet."]},
+ {slug:"omarchy-wallpaper-rotator",name:"Wallpaper Rotation",id:"shaun.wallpaper-rotator",version:"1.0.0",visibility:"Public",stars:0,forks:0,lang:"Shell",color:"#89e051",updated:"26 Nov 2026",
+  desc:"Control Omarchy's wallpaper rotation timer from a bar widget and drop-down panel.",
+  topics:["omarchy","wallpaper","systemd","themes"],
+  files:["BarWidget.qml","Panel.qml","scripts/","manifest.json","README.md","LICENSE"],
+  features:["Shows the current theme, wallpaper count and Active / Paused state","Interval presets from 1 to 60 minutes, or a custom 1-240 minute value","Pause and resume by disabling / enabling the existing systemd timer","Force one immediate rotation with Next wallpaper","Reset to the 5-minute default"],
+  images:[],
+  install:"omarchy plugin add https://github.com/a77lic7ion/omarchy-wallpaper-rotator.git --enable",
+  notes:["Manages omarchy-bg-rotate.timer; it does not start a second Quickshell process.","Submitted to the Omarchy marketplace, issue #15966. Screenshot not in the repo yet."]},
+ {slug:"shaun.app-shortcuts",name:"App Shortcuts",id:"shaun.app-shortcuts",version:"1.0.0",visibility:"Local",stars:0,forks:0,lang:"QML",color:"#41b883",updated:"Local only",
+  desc:"Launch applications from icon buttons on the Omarchy bar.",
+  topics:["omarchy","bar","launcher","local"],
+  files:["BarWidget.qml","manifest.json"],
+  features:["Icon buttons on the bar launch a configured app","Icons can use a theme icon name or a glyph","Commands are read from the widget's apps setting"],
+  images:[],
+  install:"cp -r shaun.app-shortcuts ~/.config/omarchy/plugins/",
+  notes:["Local plugin: no public repository yet.","After copying, add the id to plugins[] and bar.layout in ~/.config/omarchy/shell.json, then run omarchy restart shell."]},
+ {slug:"shaun.free-games",name:"Free Games",id:"shaun.free-games",version:"1.0.0",visibility:"Local",stars:0,forks:0,lang:"QML",color:"#41b883",updated:"Local only",
+  desc:"Free game claims for your region from Epic Games Store and Amazon Prime Gaming / Luna.",
+  topics:["omarchy","games","epic","prime-gaming","local"],
+  files:["BarWidget.qml","Panel.qml","scripts/refresh.sh","manifest.json","README.md","LICENSE"],
+  features:["Epic current and upcoming free games with their claim windows","Amazon Prime Gaming / Luna claimable titles with links","Cover art cached once in ~/.cache/shaun-free-games","Refreshes on open and every 30 minutes in the background","Notifies on new titles and when a claim window closes within 26 hours","No account or API key needed; region defaults to ZA"],
+  images:[],
+  install:"cp -r shaun.free-games ~/.config/omarchy/plugins/",
+  notes:["Local plugin: no public repository yet.","Feeds are public but undocumented; the panel shows a plain source-unavailable state if they change."]},
+ {slug:"shaun.openrouter-usage",name:"OpenRouter Usage",id:"shaun.openrouter-usage",version:"1.0.0",visibility:"Local",stars:0,forks:0,lang:"QML",color:"#41b883",updated:"Local only",
+  desc:"Free model request quota for every OpenRouter key in Keys.txt, shown as one bar per key.",
+  topics:["omarchy","openrouter","usage","quota","local"],
+  files:["BarWidget.qml","Panel.qml","scripts/","settings.json","manifest.json","README.md","LICENSE"],
+  features:["Reads only the Openrouter lines in ~/Documents/Keys.txt","Shows used / limit / remaining free_model_daily_requests per key and time to the UTC reset","Refreshes on open and twice hourly in the background","Optional ping on quota reset and a warning below 20%","Duplicate keys collapse to one bar; keys are masked in the panel","Key is sent through a temporary curl header file, never in a process listing"],
+  images:[],
+  install:"cp -r shaun.openrouter-usage ~/.config/omarchy/plugins/",
+  notes:["Local plugin: no public repository yet.","Panel also shows Nous plan and this-model usage from local scripts."]},
+ {slug:"shaun.window-switcher",name:"Window Switcher",id:"shaun.window-switcher",version:"1.0.0",visibility:"Local",stars:0,forks:0,lang:"QML",color:"#41b883",updated:"Local only",
+  desc:"A bar button that opens a centred overview of open windows and desktops on hover.",
+  topics:["omarchy","hyprland","windows","local"],
+  files:["BarWidget.qml","manifest.json"],
+  features:["Hover the bar button to open a centred window overview","Lists open windows grouped by desktop","Click a window to focus it through Hyprland","Move a window to another desktop from the overview"],
+  images:[],
+  install:"cp -r shaun.window-switcher ~/.config/omarchy/plugins/",
+  notes:["Local plugin: no public repository yet.","Uses the Hyprland hl.dsp.focus dispatcher, not legacy dispatch syntax."]}
+];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const bySlug=s=>REPOS.find(r=>r.slug===s);
+const $=s=>document.querySelector(s);
+const state={q:"",kind:"All",status:"All",order:"index",editing:false,mode:"read",current:null};
+const KEY="plugshelf.edits.v1";
+let shipped={},localEdits={};
+try{localEdits=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){localEdits={}}
+async function loadShipped(){
+  if(!location.protocol.startsWith("http"))return;
+  try{const r=await fetch("edits.json",{cache:"no-store"});if(r.ok){const j=await r.json();if(j&&typeof j==="object")shipped=j;}}catch(e){}
+}
+function numOf(r){return String(REPOS.findIndex(x=>x.slug===r.slug)+1).padStart(3,"0")}
+function plugin(slug){const base=bySlug(slug)||{};const o=Object.assign({},shipped[slug]||{},localEdits[slug]||{});return Object.assign({},base,o);}
+function allPlugins(){return REPOS.map(r=>plugin(r.slug));}
+function ensureEdit(slug){
+  const e=localEdits[slug]||(localEdits[slug]={});
+  if(!Array.isArray(e.images))e.images=plugin(slug).images.map(i=>({src:i.src,caption:i.caption}));
+  if(e.desc===undefined)e.desc=plugin(slug).desc;
+  if(e.install===undefined)e.install=plugin(slug).install;
+  return e;
+}
+function persist(){
+  try{localStorage.setItem(KEY,JSON.stringify(localEdits));const s=document.getElementById("save-state");if(s)s.textContent="Saved locally";return true;}
+  catch(e){toast("Browser storage is full. Export edits, then remove a large screenshot.");return false;}
+}
+const kinds=["All","Bar","System","Games","AI","Local"];
+const statuses=["All","Public","Local"];
+const orders=["Index","A-Z","State"];
+function kindOf(r){
+  if(r.visibility==="Local")return "Local";
+  const s=r.slug;
+  if(/gw2|free-games/.test(s))return "Games";
+  if(/agent-pet/.test(s))return "AI";
+  if(/server-kill|plugin-updates|wallpaper-rotator|overflow/.test(s))return "System";
+  return "Bar";
+}
+function stateOf(r){
+  if(r.visibility==="Local")return "Local";
+  if(/overflow|wallpaper-rotator/.test(r.slug))return "Submitted";
+  return "Listed";
+}
+function filtered(){
+  let out=allPlugins().filter(r=>{
+    const k=kindOf(r), st=r.visibility;
+    const hay=(r.name+" "+r.id+" "+r.desc+" "+r.topics.join(" ")).toLowerCase();
+    return (state.kind==="All"||k===state.kind)&&(state.status==="All"||st===state.status)&&(!state.q||hay.includes(state.q.toLowerCase()));
+  });
+  if(state.order==="A-Z")out=out.slice().sort((a,b)=>a.name.localeCompare(b.name));
+  if(state.order==="State")out=out.slice().sort((a,b)=>stateOf(a).localeCompare(stateOf(b))||a.name.localeCompare(b.name));
+  return out;
+}
+function chipRow(el,items,key){el.innerHTML=items.map(x=>'<button class="chip" data-key="'+key+'" data-val="'+x+'" aria-pressed="'+(state[key]===x)+'">'+x+'</button>').join("");}
+function render(){
+  chipRow($("#kinds"),kinds,"kind");chipRow($("#states"),statuses,"status");chipRow($("#orders"),orders,"order");
+  const list=filtered();
+  $("#shown").textContent=list.length+" / "+REPOS.length;
+  $("#view-label").textContent=state.kind==="All"?"Shelf view":state.kind.toUpperCase()+" / "+list.length;
+  $("#entries").innerHTML=list.map(r=>{
+    const n=numOf(r), st=stateOf(r), img=r.images&&r.images[0];
+    const edited=!!(localEdits[r.slug]||shipped[r.slug]);
+    return '<article class="entry" tabindex="0" data-slug="'+r.slug+'" aria-label="Inspect '+esc(r.name)+'">'
+      +'<div class="entry-top"><span class="num">'+n+'</span><span class="state '+st.toLowerCase()+'">'+st+'</span>'+(edited?'<span class="edit-link" style="color:var(--accent);font-size:9px">EDITED</span>':'')+'</div>'
+      +'<div class="thumb'+(img?"":" blank")+'">'+(img?'<img loading="lazy" src="'+esc(img.src)+'" alt="'+esc(r.name)+' panel">':'<span class="blank-mark">'+n+'</span><span class="blank-tag">NO CAPTURE IN SOURCE</span>')+'</div>'
+      +'<div class="entry-body"><h3>'+esc(r.name)+'</h3><p class="pid">'+esc(r.id)+' · v'+r.version+'</p><p class="desc">'+esc(r.desc)+'</p>'
+      +'<div class="tags">'+r.topics.slice(0,3).map(t=>'<span class="tag">'+esc(t)+'</span>').join("")+'</div>'
+      +'<div class="entry-foot"><button class="copy" data-cmd="'+esc(r.install)+'">Copy install</button>'
+      +'<button class="inspect" data-inspect="'+r.slug+'">Inspect →</button>'
+      +(state.editing?'<button class="inspect edit-link" data-edit-one="'+r.slug+'">Edit</button>':'')+'</div></div></article>';
+  }).join("")||'<div class="empty" style="border:1px dashed var(--line);padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px">NO ENTRIES MATCH. CLEAR A FILTER.</div>';
+}
+function modeTabs(slug){
+  if(!state.editing)return "";
+  return '<div class="sheet-tabs"><button class="chip" data-mode="read" aria-pressed="'+(state.mode==="read")+'">Read</button>'
+   +'<button class="chip" data-mode="edit" aria-pressed="'+(state.mode==="edit")+'">Edit</button></div>';
+}
+function readHtml(r){
+  return modeTabs(r.slug)
+   +'<h2>'+esc(r.name)+'</h2><p class="idline">'+esc(r.id)+' &nbsp;·&nbsp; v'+r.version+' &nbsp;·&nbsp; '+r.visibility+' &nbsp;·&nbsp; '+stateOf(r)+'</p>'
+   +'<p class="lead">'+esc(r.desc)+'</p>'
+   +(r.images&&r.images[0]?'<figure class="shot"><img src="'+esc(r.images[0].src)+'" alt="'+esc(r.images[0].caption)+'"><figcaption>'+esc(r.images[0].caption)+'</figcaption></figure>':'')
+   +'<h3>What it does</h3><ul>'+r.features.map(f=>'<li>'+esc(f)+'</li>').join("")+'</ul>'
+   +'<h3>Install</h3><pre><code>'+esc(r.install)+'</code><button class="copy" data-cmd="'+esc(r.install)+'">Copy</button></pre>'
+   +'<h3>Notes</h3><ul>'+r.notes.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>'
+   +(r.images&&r.images.length>1?'<h3>More captures</h3>'+r.images.slice(1).map(i=>'<figure class="shot"><img loading="lazy" src="'+esc(i.src)+'" alt="'+esc(i.caption)+'"><figcaption>'+esc(i.caption)+'</figcaption></figure>').join(""):'')
+   +'<h3>Files</h3><div class="files">'+r.files.map(f=>'<span class="file">'+esc(f)+'</span>').join("")+'</div>';
+}
+function editorHtml(r){
+  const e=ensureEdit(r.slug);
+  return modeTabs(r.slug)+'<div class="editor">'
+   +'<h2 style="margin-bottom:4px">Edit '+esc(r.name)+'</h2><p class="idline">Saved in this browser. Export to publish the changes.</p>'
+   +'<div class="field-row"><label for="f-desc">Description</label><textarea id="f-desc" data-field="desc">'+esc(e.desc)+'</textarea></div>'
+   +'<div class="field-row"><label for="f-install">Install command</label><textarea id="f-install" data-field="install" style="min-height:72px">'+esc(e.install)+'</textarea><p class="hint">Shown as a copyable code block in Read mode.</p></div>'
+   +'<div class="field-row"><label>Screenshots · '+e.images.length+'</label>'
+   +e.images.map((im,i)=>'<div class="img-row"><img src="'+esc(im.src)+'" alt="">'
+     +'<div class="img-meta"><input type="text" data-caption="'+i+'" value="'+esc(im.caption)+'" aria-label="Screenshot caption"></div>'
+     +'<div class="img-actions"><label class="mini" for="replace-'+i+'">Replace</label><input id="replace-'+i+'" type="file" accept="image/*" data-replace="'+i+'">'
+     +'<button class="mini danger" data-remove="'+i+'">Remove</button></div></div>').join("")
+   +'<label class="add-shot" for="add-shot">+ Add screenshots · JPG, PNG or WebP</label><input id="add-shot" type="file" accept="image/*" multiple data-add="1"></div>'
+   +'<div class="editor-foot"><button class="tool-btn" id="btn-preview">Preview</button>'
+   +'<button class="tool-btn" data-reset-one="'+r.slug+'">Reset this plugin</button>'
+   +'<span class="saved" id="save-state">Saved locally</span></div></div>';
+}
+function openSheet(slug,mode){
+  const r=plugin(slug);if(!r||!r.id)return;
+  state.current=slug;state.mode=mode||(state.editing?"edit":"read");
+  const n=numOf(r);
+  $("#sheet-tag").textContent="PLUGIN / "+n+" · "+kindOf(r).toUpperCase();
+  $("#sheet-body").innerHTML=state.mode==="edit"?editorHtml(r):readHtml(r);
+  $("#sheet").classList.add("open");$("#backdrop").classList.add("open");$("#sheet").setAttribute("aria-hidden","false");document.body.classList.add("locked");
+  $("#close").focus();sheetReturn=document.activeElement;
+}
+function compressFile(file){
+  return new Promise(resolve=>{
+    const fr=new FileReader();
+    fr.onerror=()=>resolve(null);
+    fr.onload=()=>{
+      const img=new Image();
+      img.onerror=()=>resolve(fr.result);
+      img.onload=()=>{
+        try{
+          const max=1200,scale=Math.min(1,max/Math.max(img.width,img.height));
+          const c=document.createElement("canvas");c.width=Math.max(1,Math.round(img.width*scale));c.height=Math.max(1,Math.round(img.height*scale));
+          c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+          resolve(c.toDataURL("image/jpeg",0.78));
+        }catch(e){resolve(fr.result);}
+      };
+      img.src=fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
+}
+async function applyFiles(files,slug,index){
+  const e=ensureEdit(slug);let changed=false;
+  for(const f of files){
+    const src=await compressFile(f);if(!src)continue;
+    if(index===null)e.images.push({src:src,caption:f.name.replace(/\.[^.]+$/,"")});
+    else if(e.images[index])e.images[index].src=src;
+    changed=true;
+  }
+  if(changed){persist();render();openSheet(slug,"edit");toast(files.length+" screenshot"+(files.length===1?"":"s")+" added");}
+}
+let sheetReturn=null;
+function closeSheet(){$("#sheet").classList.remove("open");$("#backdrop").classList.remove("open");$("#sheet").setAttribute("aria-hidden","true");document.body.classList.remove("locked");if(sheetReturn&&sheetReturn.focus)sheetReturn.focus();}
+function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("show"),1600);}
+function exportEdits(){
+  const blob=new Blob([JSON.stringify(localEdits,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="edits.json";document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1500);toast("edits.json downloaded");
+}
+function toggleEdit(on){
+  state.editing=on;document.body.classList.toggle("editing",on);
+  const b=$("#btn-edit");b.classList.toggle("on",on);b.textContent=on?"Done editing":"Edit shelf";
+  state.mode=on?"edit":"read";render();
+  if($("#sheet").classList.contains("open")&&state.current)openSheet(state.current,state.mode);
+}
+document.addEventListener("click",async e=>{
+  const c=e.target.closest("[data-cmd]");
+  if(c){try{await navigator.clipboard.writeText(c.dataset.cmd);}catch(_){const ta=document.createElement("textarea");ta.value=c.dataset.cmd;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();}
+    const old=c.textContent;c.textContent="Copied";c.classList.add("done");toast("Install command copied");setTimeout(()=>{c.textContent=old;c.classList.remove("done");},1500);return;}
+  if(e.target.id==="btn-edit"){toggleEdit(!state.editing);return;}
+  if(e.target.id==="btn-export"){exportEdits();return;}
+  const m=e.target.closest("[data-mode]");if(m){state.mode=m.dataset.mode;openSheet(state.current,state.mode);return;}
+  const eo=e.target.closest("[data-edit-one]");if(eo){openSheet(eo.dataset.editOne,"edit");return;}
+  if(e.target.closest("#btn-preview")){openSheet(state.current,"read");return;}
+  const ro=e.target.closest("[data-reset-one]");if(ro){if(confirm("Reset "+plugin(ro.dataset.resetOne).name+" to the original description and screenshots?")){delete localEdits[ro.dataset.resetOne];persist();render();openSheet(ro.dataset.resetOne,"edit");toast("Plugin reset to original");}return;}
+  const rm=e.target.closest("[data-remove]");if(rm){const ed=ensureEdit(state.current);ed.images.splice(Number(rm.dataset.remove),1);persist();render();openSheet(state.current,"edit");return;}
+  const i=e.target.closest("[data-inspect]");if(i){openSheet(i.dataset.inspect);return;}
+  const ch=e.target.closest(".chip:not([data-mode])");if(ch){state[ch.dataset.key]=ch.dataset.val;render();return;}
+  const card=e.target.closest(".entry");if(card&&!e.target.closest("button")){openSheet(card.dataset.slug);return;}
+  if(e.target.id==="backdrop"||e.target.id==="close")closeSheet();
+});
+document.addEventListener("input",e=>{
+  if(e.target.id==="q"){state.q=e.target.value;render();return;}
+  const f=e.target.closest("[data-field]");
+  if(f&&state.current){const ed=ensureEdit(state.current);ed[f.dataset.field]=f.value;persist();
+    if(f.dataset.field==="desc"){const card=document.querySelector('.entry[data-slug="'+state.current+'"]');const d=card&&card.querySelector(".desc");if(d)d.textContent=f.value;}
+    return;}
+  const cap=e.target.closest("[data-caption]");
+  if(cap&&state.current){const ed=ensureEdit(state.current);const idx=Number(cap.dataset.caption);if(ed.images[idx])ed.images[idx].caption=cap.value;persist();}
+});
+document.addEventListener("change",e=>{
+  const add=e.target.closest("[data-add]");if(add&&add.files&&add.files.length){applyFiles(add.files,state.current,null);return;}
+  const rep=e.target.closest("[data-replace]");if(rep&&rep.files&&rep.files.length){applyFiles(rep.files,state.current,Number(rep.dataset.replace));}
+});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape")closeSheet();
+  if(e.key==="/"&&!/input|textarea/i.test(document.activeElement.tagName)){e.preventDefault();$("#q").focus();}
+});
+document.addEventListener("keypress",e=>{if(e.key==="Enter"&&e.target.classList.contains("entry"))openSheet(e.target.dataset.slug);});
+function setTheme(t){document.body.dataset.theme=t;$("#btn-ember").setAttribute("aria-pressed",t==="ember");$("#btn-signal").setAttribute("aria-pressed",t==="signal");}
+$("#btn-ember").addEventListener("click",()=>setTheme("ember"));$("#btn-signal").addEventListener("click",()=>setTheme("signal"));
+function tick(){$("#clock").textContent=new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})+" SAST";}
+tick();setInterval(tick,30000);
+async function boot(){
+  await loadShipped();
+  $("#m-total").textContent=REPOS.length;$("#m-public").textContent=REPOS.filter(r=>r.visibility==="Public").length;$("#m-local").textContent=REPOS.filter(r=>r.visibility==="Local").length;
+  render();
+}
+boot();
+</script>
+</body>
+</html>

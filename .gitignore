@@ -1,0 +1,8 @@
+# Generated public build (recreate with build-live.py)
+live/
+__pycache__/
+*.log
+
+# Internal screenshots: addresses and an API-key field
+assets/omarchy-server-kill_preview*.png
+assets/shaun.gw2-trading-post_preview-settings.jpg
