@@ -6,3 +6,4 @@ __pycache__/
 # Internal screenshots: addresses and an API-key field
 assets/omarchy-server-kill_preview*.png
 assets/shaun.gw2-trading-post_preview-settings.jpg
+.vercel

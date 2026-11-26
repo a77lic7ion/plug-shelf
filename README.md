@@ -6,7 +6,10 @@ No build step, no server code, no accounts, no API keys. The whole folder can be
 
 ## Open it now
 
-The editable copy runs locally on port 8902 on this machine. The exact laptop, WiFi and Tailscale addresses are recorded in the project note in Obsidian. The read-only public build has no edit controls and is linked from the GitHub repository.
+The editable copy runs locally on port 8902 on this machine. The exact laptop, WiFi and Tailscale addresses are recorded in the project note in Obsidian. The read-only public build has no edit controls.
+
+- Live site: https://plug-shelf.vercel.app
+- Source: https://github.com/a77lic7ion/plug-shelf
 
 ## Edit a plugin
 
