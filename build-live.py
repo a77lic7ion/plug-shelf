@@ -43,15 +43,11 @@ live.mkdir(exist_ok=True)
 for name in ("DESIGN.md", "README.md"):
     shutil.copy2(root / name, live / name)
 
-# Published edits: keep Shaun's new screenshots except ones with internal
-# addresses, a key field, or the wrong subject. Those stay local only.
+# Published edits: keep Shaun's new screenshots except ones with a key field
+# or the wrong subject. Those stay local only.
 edits = json.loads((root / "edits.json").read_text())
 hidden = 0
 for slug, override in edits.items():
-    if slug == "omarchy-server-kill":
-        hidden += len(override.get("images", []))
-        override["images"] = []
-        continue
     keep = []
     for image in override.get("images", []):
         caption = image.get("caption", "")

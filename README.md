@@ -36,7 +36,7 @@ If your browser still shows the old version, your local edits are taking priorit
 
 ## Public build
 
-`build-live.py` generates `live/`: the same site with **Edit shelf** and **Export** removed, three screenshots held back, and no local edit controls. The held-back captures are Server Kill (internal addresses), the GW2 API key settings panel, and a stray browser-tab screenshot. That folder is what Vercel serves. The editable copy stays on this machine with all original and added images.
+`build-live.py` generates `live/`: the same site with **Edit shelf** and **Export** removed, two screenshots held back, and no local edit controls. The held-back captures are the GW2 API key settings panel and a stray browser-tab screenshot. That folder is what Vercel serves. The editable copy stays on this machine with all original and added images.
 
 To host: upload the generated `live/` folder to any static host, or import the repo into Vercel, which runs the build script and serves `live/`. No configuration or secrets are needed.
 
