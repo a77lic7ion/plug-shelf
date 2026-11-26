@@ -35,6 +35,8 @@ main{max-width:1360px;margin:0 auto;padding:0 26px}
 .mast-meta{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;font-family:var(--mono);font-size:11px;color:var(--muted)}
 .mast-meta b{color:var(--text);font-weight:700}
 .mast-meta .pip{color:var(--accent)}
+.mast-meta a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--line)}
+.mast-meta a:hover{border-color:var(--accent)}
 .workbench{display:grid;grid-template-columns:214px minmax(0,1fr);gap:30px;padding:28px 0 60px;align-items:start}
 .rail{position:sticky;top:82px}
 .rail-block{margin-bottom:24px}
@@ -166,7 +168,7 @@ input[type=file]{display:none}
     <h1>Shell tools,<br><em>filed properly.</em></h1>
     <p class="mast-sub">Eleven plugins built for the Omarchy Quattro shell. Filter the shelf, inspect a plugin, copy the install command. No account, no tracking, no fluff.</p>
     <div class="mast-meta">
-      <span><b id="m-total">11</b> entries</span><span><span class="pip">/</span> <b id="m-public">7</b> public</span><span><span class="pip">/</span> <b id="m-local">4</b> local only</span><span><span class="pip">/</span> <b>design.md</b> driven</span>
+      <span><b id="m-total">11</b> entries</span><span><span class="pip">/</span> <b id="m-public">7</b> public</span><span><span class="pip">/</span> <b id="m-local">4</b> local only</span><span><span class="pip">/</span> <b>design.md</b> driven</span><span><span class="pip">/</span> <a href="https://plug-shelf.vercel.app" target="_blank" rel="noopener">Live site ↗</a></span>
     </div>
   </section>
   <div class="workbench">
@@ -188,7 +190,7 @@ input[type=file]{display:none}
   <div class="sheet-head"><span id="sheet-tag">PLUGIN / 001</span><button class="close" id="close" aria-label="Close inspector">×</button></div>
   <div class="sheet-scroll" id="sheet-body"></div>
 </aside>
-<footer>Design preview · tokens in DESIGN.md · built from local plugin folders and public repositories · no credentials included</footer>
+<footer>Plug Shelf · tokens in DESIGN.md · live at <a href="https://plug-shelf.vercel.app" target="_blank" rel="noopener">plug-shelf.vercel.app</a> · no credentials included</footer>
 <div class="toast" id="toast"></div>
 <script>
 const REPOS = [
