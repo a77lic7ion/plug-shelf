@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Build the read-only public site in live/ from the editable local index.html."""
 from pathlib import Path
+import json
 import shutil
 
 root = Path(__file__).resolve().parent
@@ -39,8 +40,27 @@ html = html.replace(
 live.mkdir(exist_ok=True)
 (live / "index.html").write_text(html)
 
-for name in ("edits.json", "DESIGN.md", "README.md"):
+for name in ("DESIGN.md", "README.md"):
     shutil.copy2(root / name, live / name)
+
+# Published edits: keep Shaun's new screenshots except ones with internal
+# addresses, a key field, or the wrong subject. Those stay local only.
+edits = json.loads((root / "edits.json").read_text())
+hidden = 0
+for slug, override in edits.items():
+    if slug == "omarchy-server-kill":
+        hidden += len(override.get("images", []))
+        override["images"] = []
+        continue
+    keep = []
+    for image in override.get("images", []):
+        caption = image.get("caption", "")
+        if "API key settings" in caption or "not a plugin panel" in caption:
+            hidden += 1
+        else:
+            keep.append(image)
+    override["images"] = keep
+(live / "edits.json").write_text(json.dumps(edits, indent=2) + "\n")
 
 assets_out = live / "assets"
 if assets_out.exists():
@@ -55,4 +75,5 @@ for src in sorted((root / "assets").iterdir()):
 
 print(f"Built {live / 'index.html'}")
 print(f"Copied {len(copied)} screenshots; omitted Server Kill captures")
+print(f"Omitted {hidden} edited screenshots with private or off-topic content")
 print("Edit shelf and Export controls removed")
