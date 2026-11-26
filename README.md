@@ -31,7 +31,7 @@ Edits stay in this browser until you sync them. Nothing is sent anywhere before 
 The local server (`sync_server.py`) is already running on port 8902. It serves this site and handles the sync endpoint.
 
 1. Click **Sync to GitHub** in the top right.
-2. The helper compares your browser edits with `edits.json`. If nothing changed, it says "Already up to date".
+2. The helper merges your edits with the published ones, so editing one plugin never removes another plugin's images. If nothing changed overall, it says "Already up to date".
 3. If something changed, it saves a backup as `edits.json.pre-sync`, commits **only `edits.json`**, pushes to GitHub, rebuilds the public folder and redeploys to Vercel.
 4. The button reports the short commit hash when done.
 

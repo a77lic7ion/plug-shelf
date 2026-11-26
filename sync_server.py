@@ -82,17 +82,23 @@ class Handler(BaseHTTPRequestHandler):
         if not isinstance(incoming, dict):
             return self.reply(400, {"error": "Expected an object keyed by plugin slug"})
         for slug, override in incoming.items():
-            if not isinstance(slug, str) or not isinstance(override, dict):
+            if not isinstance(slug, str) or (override is not None and not isinstance(override, dict)):
                 return self.reply(400, {"error": "Invalid plugin entry"})
 
         with SYNC_LOCK:
             edits_path = ROOT / "edits.json"
             current = json.loads(edits_path.read_text())
-            if incoming == current:
+            proposed = dict(current)
+            for slug, override in incoming.items():
+                if override is None:
+                    proposed.pop(slug, None)
+                else:
+                    proposed[slug] = override
+            if proposed == current:
                 return self.reply(200, {"status": "unchanged", "message": "Already up to date"})
 
             (ROOT / "edits.json.pre-sync").write_text(json.dumps(current, indent=2) + "\n")
-            edits_path.write_text(json.dumps(incoming, indent=2) + "\n")
+            edits_path.write_text(json.dumps(proposed, indent=2) + "\n")
 
             add = run(["git", "add", "--", "edits.json"])
             if add.returncode:

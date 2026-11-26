@@ -284,7 +284,7 @@ const REPOS = [
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const bySlug=s=>REPOS.find(r=>r.slug===s);
 const $=s=>document.querySelector(s);
-const state={q:"",kind:"All",status:"All",order:"index",editing:false,mode:"read",current:null};
+const state={q:"",kind:"All",status:"All",order:"index",editing:false,mode:"read",current:null,removed:[]};
 const KEY="plugshelf.edits.v1";
 let shipped={},localEdits={};
 try{localEdits=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){localEdits={}}
@@ -297,6 +297,7 @@ function plugin(slug){const base=bySlug(slug)||{};const o=Object.assign({},shipp
 function allPlugins(){return REPOS.map(r=>plugin(r.slug));}
 function ensureEdit(slug){
   const e=localEdits[slug]||(localEdits[slug]={});
+  state.removed=state.removed.filter(x=>x!==slug);
   if(!Array.isArray(e.images))e.images=plugin(slug).images.map(i=>({src:i.src,caption:i.caption}));
   if(e.desc===undefined)e.desc=plugin(slug).desc;
   if(e.install===undefined)e.install=plugin(slug).install;
@@ -430,11 +431,21 @@ function downloadEdits(){
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="edits.json";document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(a.href),1500);toast("edits.json downloaded");
 }
+function syncPayload(){
+  const payload={};
+  const slugs=new Set([...Object.keys(shipped),...Object.keys(localEdits),...state.removed]);
+  slugs.forEach(slug=>{
+    if(state.removed.includes(slug)){payload[slug]=null;return;}
+    const p=plugin(slug);
+    payload[slug]={desc:p.desc,install:p.install,images:(p.images||[]).map(i=>({src:i.src,caption:i.caption}))};
+  });
+  return payload;
+}
 async function syncToGitHub(){
   const btn=$("#btn-sync");if(btn.disabled)return;
   const old=btn.textContent;btn.disabled=true;btn.textContent="Syncing...";
   try{
-    const res=await fetch("/api/sync",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(localEdits)});
+    const res=await fetch("/api/sync",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(syncPayload())});
     const out=await res.json().catch(()=>({}));
     if(!res.ok)throw new Error(out.error||("HTTP "+res.status));
     toast(out.status==="unchanged"?"Already up to date":("Synced "+out.commit+" to GitHub"));
@@ -457,7 +468,7 @@ document.addEventListener("click",async e=>{
   const m=e.target.closest("[data-mode]");if(m){state.mode=m.dataset.mode;openSheet(state.current,state.mode);return;}
   const eo=e.target.closest("[data-edit-one]");if(eo){openSheet(eo.dataset.editOne,"edit");return;}
   if(e.target.closest("#btn-preview")){openSheet(state.current,"read");return;}
-  const ro=e.target.closest("[data-reset-one]");if(ro){if(confirm("Reset "+plugin(ro.dataset.resetOne).name+" to the original description and screenshots?")){delete localEdits[ro.dataset.resetOne];persist();render();openSheet(ro.dataset.resetOne,"edit");toast("Plugin reset to original");}return;}
+  const ro=e.target.closest("[data-reset-one]");if(ro){if(confirm("Reset "+plugin(ro.dataset.resetOne).name+" to the original description and screenshots?")){delete localEdits[ro.dataset.resetOne];if(!state.removed.includes(ro.dataset.resetOne))state.removed.push(ro.dataset.resetOne);persist();render();openSheet(ro.dataset.resetOne,"edit");toast("Plugin reset to original");}return;}
   const rm=e.target.closest("[data-remove]");if(rm){const ed=ensureEdit(state.current);ed.images.splice(Number(rm.dataset.remove),1);persist();render();openSheet(state.current,"edit");return;}
   const i=e.target.closest("[data-inspect]");if(i){openSheet(i.dataset.inspect);return;}
   const ch=e.target.closest(".chip:not([data-mode])");if(ch){state[ch.dataset.key]=ch.dataset.val;render();return;}
