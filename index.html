@@ -37,6 +37,14 @@ main{max-width:1360px;margin:0 auto;padding:0 26px}
 .mast-meta .pip{color:var(--accent)}
 .mast-meta a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--line)}
 .mast-meta a:hover{border-color:var(--accent)}
+.updates{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:18px 0 20px}
+.updates-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.updates-head h2{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0}
+.updates-head span{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.updates ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:0 24px}
+.updates li{display:flex;gap:12px;padding:9px 0;border-top:1px solid var(--soft);font-size:13px;color:#c8c7c2}
+.updates time{font-family:var(--mono);font-size:10px;color:var(--accent);white-space:nowrap;padding-top:2px}
+.updates li b{color:var(--text);font-weight:600}
 .workbench{display:grid;grid-template-columns:214px minmax(0,1fr);gap:30px;padding:28px 0 60px;align-items:start}
 .rail{position:sticky;top:82px}
 .rail-block{margin-bottom:24px}
@@ -171,6 +179,10 @@ input[type=file]{display:none}
       <span><b id="m-total">11</b> entries</span><span><span class="pip">/</span> <b id="m-public">7</b> public</span><span><span class="pip">/</span> <b id="m-local">4</b> local only</span><span><span class="pip">/</span> <b>design.md</b> driven</span><span><span class="pip">/</span> <a href="https://plug-shelf.vercel.app" target="_blank" rel="noopener">Live site ↗</a></span>
     </div>
   </section>
+  <section class="updates" aria-label="Recent updates">
+    <div class="updates-head"><h2>Recent updates</h2><span>Latest first</span></div>
+    <ol id="updates-list"></ol>
+  </section>
   <div class="workbench">
     <aside class="rail" aria-label="Filters">
       <div class="rail-block"><p class="rail-label">Find</p><label class="search"><span class="mono" style="color:var(--muted)">/</span><input id="q" placeholder="name, id, tag..." autocomplete="off"><kbd>/</kbd></label></div>
@@ -218,7 +230,7 @@ const REPOS = [
   images:[{src:"assets/redragon-m908_preview.png",caption:"Redragon M908 button map and profile panel"}],
   install:"omarchy plugin add https://github.com/a77lic7ion/omarchy-redragon-m908.git --enable",
   notes:["Needs the m908d daemon from the repository's daemon/ folder running first.","The daemon is bundled in the same repo and pinned to the same commit as the panel."]},
- {slug:"omarchy-gw2-trading-post",name:"GW2 Trading Post",id:"shaun.gw2-trading-post",version:"1.0.0",visibility:"Public",stars:1,forks:0,lang:"QML",color:"#41b883",updated:"25 Nov 2026",
+ {slug:"omarchy-gw2-trading-post",name:"GW2 Trading Post",id:"shaun.gw2-trading-post",version:"1.0.1",visibility:"Public",state:"Listed",stars:1,forks:0,lang:"QML",color:"#41b883",updated:"26 Nov 2026",
   desc:"Guild Wars 2 wallet gold and Wizard's Vault dailies on the Omarchy bar.",
   topics:["guild-wars-2","omarchy","trading-post","api"],
   files:["BarWidget.qml","Panel.qml","Model.js","manifest.json","README.md","LICENSE"],
@@ -226,38 +238,38 @@ const REPOS = [
   images:[{src:"assets/shaun.gw2-trading-post_preview.png",caption:"GW2 panel: wallet and Wizard's Vault dailies"},{src:"assets/shaun.gw2-trading-post_preview-settings.jpg",caption:"API key settings panel"}],
   install:"omarchy plugin add https://github.com/a77lic7ion/omarchy-gw2-trading-post.git --enable",
   notes:["Needs a Guild Wars 2 API key with Account and Wallet permissions.","The token is passed through a temporary curl config file, never on the command line."]},
- {slug:"omarchy-ai-desktop-agent",name:"AI Desktop Agent",id:"shaun.agent-pet",version:"0.2.0",visibility:"Public",stars:1,forks:0,lang:"QML",color:"#41b883",updated:"11 Nov 2026",
+ {slug:"omarchy-ai-desktop-agent",name:"AI Desktop Agent",id:"ai.desktop-agent",version:"2.0.0",visibility:"Public",state:"Submitted",stars:1,forks:0,lang:"QML",color:"#41b883",updated:"26 Nov 2026",
   desc:"A small desk robot that types, waits and rings its bell as Hermes and OpenCode sessions change state.",
   topics:["omarchy","ai-agents","hermes","opencode","desk-toy"],
   files:["BarWidget.qml","Pet.qml","PetWindow.qml","Service.qml","assets/","bin/","hooks/","manifest.json","README.md","LICENSE"],
   features:["Live pose per agent state: working (typing), waiting (needs input), done (bell)","Auto-hide: appears when work starts, hides when sessions end","Rings the bell when a turn finishes, then rests before hiding","Bar on/off switch and a draggable desk toy with gravity","Tracks multiple agents and sessions at once"],
   images:[{src:"assets/omarchy-ai-desktop-agent_preview.png",caption:"Agent Pet states: working, waiting and done"},{src:"assets/webp_working.webp",caption:"Working pose"},{src:"assets/webp_waiting.webp",caption:"Waiting pose"},{src:"assets/webp_done.webp",caption:"Done pose"}],
-  install:"git clone https://github.com/a77lic7ion/omarchy-ai-desktop-agent.git ~/.config/omarchy/plugins/shaun.agent-pet && omarchy plugin enable shaun.agent-pet",
-  notes:["Hermes shell hooks and an OpenCode plugin push state to a Unix socket.","Config lives at ~/.config/agent-pet/config.json, outside the plugin folder."]},
- {slug:"omarchy-overflow",name:"Overflow",id:"shaun.overflow",version:"1.0.0",visibility:"Public",stars:0,forks:0,lang:"QML",color:"#41b883",updated:"26 Nov 2026",
+  install:"omarchy plugin add https://github.com/a77lic7ion/omarchy-ai-desktop-agent.git --enable",
+  notes:["Hermes shell hooks and an OpenCode plugin push state to a Unix socket.","Plugin id changed to ai.desktop-agent in v2.0.0; config remains at ~/.config/agent-pet/config.json."]},
+ {slug:"omarchy-overflow",name:"Overflow",id:"shaun.overflow",version:"1.0.0",visibility:"Public",state:"Listed",stars:0,forks:0,lang:"QML",color:"#41b883",updated:"26 Nov 2026",
   desc:"File bar icons into a drop-down panel that never collides with the app shortcuts.",
   topics:["omarchy","bar","quickshell","ui"],
   files:["BarWidget.qml","Panel.qml","Service.qml","OverflowModel.js","manifest.json","README.md","LICENSE"],
   features:["Chevron in the bar shows how many icons are filed away","Three-column panel drops down (or up), never sideways","Add from the bar moves any enabled widget into the panel in one click","Put back returns an icon to its original bar section","Refresh rescans for widgets enabled after the panel opened"],
   images:[],
   install:"omarchy plugin add https://github.com/a77lic7ion/omarchy-overflow.git --enable",
-  notes:["Submitted to the Omarchy marketplace, issue #15967.","Screenshot not included in the source repository yet."]},
- {slug:"omarchy-wallpaper-rotator",name:"Wallpaper Rotation",id:"shaun.wallpaper-rotator",version:"1.0.0",visibility:"Public",stars:0,forks:0,lang:"Shell",color:"#89e051",updated:"26 Nov 2026",
+  notes:["Listed on the Omarchy marketplace as v1.0.0 (issue #15967).","Screenshot not included in the source repository yet."]},
+ {slug:"omarchy-wallpaper-rotator",name:"Wallpaper Rotation",id:"shaun.wallpaper-rotator",version:"1.0.0",visibility:"Public",state:"Listed",stars:0,forks:0,lang:"Shell",color:"#89e051",updated:"26 Nov 2026",
   desc:"Control Omarchy's wallpaper rotation timer from a bar widget and drop-down panel.",
   topics:["omarchy","wallpaper","systemd","themes"],
   files:["BarWidget.qml","Panel.qml","scripts/","manifest.json","README.md","LICENSE"],
   features:["Shows the current theme, wallpaper count and Active / Paused state","Interval presets from 1 to 60 minutes, or a custom 1-240 minute value","Pause and resume by disabling / enabling the existing systemd timer","Force one immediate rotation with Next wallpaper","Reset to the 5-minute default"],
   images:[],
   install:"omarchy plugin add https://github.com/a77lic7ion/omarchy-wallpaper-rotator.git --enable",
-  notes:["Manages omarchy-bg-rotate.timer; it does not start a second Quickshell process.","Submitted to the Omarchy marketplace, issue #15966. Screenshot not in the repo yet."]},
- {slug:"shaun.app-shortcuts",name:"App Shortcuts",id:"shaun.app-shortcuts",version:"1.0.0",visibility:"Local",stars:0,forks:0,lang:"QML",color:"#41b883",updated:"Local only",
+  notes:["Manages omarchy-bg-rotate.timer; it does not start a second Quickshell process.","Listed on the Omarchy marketplace as v1.0.0 (issue #15966). Screenshot not in the repo yet."]},
+ {slug:"shaun.app-shortcuts",name:"App Shortcuts",id:"shaun.app-shortcuts",version:"2.0.0",visibility:"Public",state:"Listed",stars:0,forks:0,lang:"QML",color:"#41b883",updated:"26 Nov 2026",
   desc:"Launch applications from icon buttons on the Omarchy bar.",
-  topics:["omarchy","bar","launcher","local"],
-  files:["BarWidget.qml","manifest.json"],
-  features:["Icon buttons on the bar launch a configured app","Icons can use a theme icon name or a glyph","Commands are read from the widget's apps setting"],
+  topics:["omarchy","bar","launcher","marketplace"],
+  files:["BarWidget.qml","Panel.qml","README.md","manifest.json","LICENSE"],
+  features:["Icon buttons on the bar launch a configured app","Icons can use a theme icon name or a glyph, with a fallback when an image fails to decode","Add apps from a searchable panel with an icon picker","Commands are read from the widget's apps setting"],
   images:[],
-  install:"cp -r shaun.app-shortcuts ~/.config/omarchy/plugins/",
-  notes:["Local plugin: no public repository yet.","After copying, add the id to plugins[] and bar.layout in ~/.config/omarchy/shell.json, then run omarchy restart shell."]},
+  install:"omarchy plugin add https://github.com/a77lic7ion/omarchy-app-shortcuts.git --enable",
+  notes:["Listed on the Omarchy marketplace as v2.0.0 (issue #15970).","If the button is not on the bar, add shaun.app-shortcuts to a bar.layout section in ~/.config/omarchy/shell.json and restart the shell."]},
  {slug:"shaun.free-games",name:"Free Games",id:"shaun.free-games",version:"1.0.0",visibility:"Local",stars:0,forks:0,lang:"QML",color:"#41b883",updated:"Local only",
   desc:"Free game claims for your region from Epic Games Store and Amazon Prime Gaming / Luna.",
   topics:["omarchy","games","epic","prime-gaming","local"],
@@ -281,7 +293,31 @@ const REPOS = [
   features:["Hover the bar button to open a centred window overview","Lists open windows grouped by desktop","Click a window to focus it through Hyprland","Move a window to another desktop from the overview"],
   images:[],
   install:"cp -r shaun.window-switcher ~/.config/omarchy/plugins/",
-  notes:["Local plugin: no public repository yet.","Uses the Hyprland hl.dsp.focus dispatcher, not legacy dispatch syntax."]}
+  notes:["Local plugin: no public repository yet.","Uses the Hyprland hl.dsp.focus dispatcher, not legacy dispatch syntax."]},
+ {slug:"shaun.gw2-wallpaper",name:"GW2 Live Wallpaper",id:"shaun.gw2-wallpaper",version:"0.1.0",visibility:"Local",state:"Local",stars:0,forks:0,lang:"QML",color:"#41b883",updated:"26 Nov 2026",
+  desc:"A full-screen Divinity's Reach wallpaper that follows Johannesburg time and weather.",
+  topics:["guild-wars-2","wallpaper","weather","wayland","local"],
+  files:["Service.qml","WallpaperSurface.qml","Weather.qml","SceneModel.js","Panel.qml","config.toml","README.md","assets/"],
+  features:["Bottom-layer, click-through Wayland surface covering every monitor","Five generated scenes: Dawn, Midday, Golden dusk, Night and Overcast, cross-fading in 900 ms","Time from Open-Meteo sunrise and sunset for Johannesburg (SAST, UTC+2)","Weather from Open-Meteo; WMO rain codes turn on a 90-streak vector rain overlay","Settings panel from the weather glyph: Active toggle, scene buttons, rain controls and refresh presets"],
+  images:[],
+  install:"cp -r shaun.gw2-wallpaper ~/.config/omarchy/plugins/",
+  notes:["Local plugin built 26 Nov 2026; no marketplace submission yet.","Add the id to plugins[] and a bar.layout section in ~/.config/omarchy/shell.json, then restart the shell. No API key needed."]},
+ {slug:"shaun.quick-commands",name:"Quick Commands",id:"shaun.quick-commands",version:"1.0.0",visibility:"Local",state:"Pending",stars:0,forks:0,lang:"QML",color:"#41b883",updated:"27 Nov 2026",
+  desc:"A bar button opening a searchable panel of terminal commands, with sudo, custom commands and collapsible categories.",
+  topics:["omarchy","bar","terminal","commands","local"],
+  files:["BarWidget.qml","Panel.qml","manifest.json"],
+  features:["Searchable panel of terminal commands opened from the bar","Per-command sudo option","Custom commands with an icon picker","Collapsible categories","Commands run in a held-open terminal"],
+  images:[],
+  install:"cp -r shaun.quick-commands ~/.config/omarchy/plugins/",
+  notes:["Built 27 Nov 2026; manifest validates and the plugin is enabled in shell.json.","Shell restart was blocked by a locked session, so activation and testing are still pending."]}
+];
+const UPDATES=[
+ {date:"27 Nov 2026",title:"Quick Commands built",text:"Searchable terminal-command panel with per-command sudo and collapsible categories; enabled locally, activation pending shell restart."},
+ {date:"26 Nov 2026",title:"GW2 Live Wallpaper built",text:"New local plugin: full-screen Divinity's Reach wallpaper following Johannesburg time, with live rain."},
+ {date:"26 Nov 2026",title:"AI Desktop Agent v2.0.0",text:"New id ai.desktop-agent; marketplace validation and security baseline passed, awaiting listing."},
+ {date:"26 Nov 2026",title:"App Shortcuts v2.0.0 listed",text:"Listed on the marketplace (issue #15970); install command now uses omarchy plugin add."},
+ {date:"26 Nov 2026",title:"Wallpaper Rotation and Overflow listed",text:"Both v1.0.0 on the marketplace (issues #15966 and #15967)."},
+ {date:"26 Nov 2026",title:"GW2 Trading Post v1.0.1 listed",text:"Marketplace update request #15911 resolved."}
 ];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const bySlug=s=>REPOS.find(r=>r.slug===s);
@@ -321,8 +357,8 @@ function kindOf(r){
   return "Bar";
 }
 function stateOf(r){
+  if(r.state)return r.state;
   if(r.visibility==="Local")return "Local";
-  if(/overflow|wallpaper-rotator/.test(r.slug))return "Submitted";
   return "Listed";
 }
 function filtered(){
@@ -497,10 +533,14 @@ document.addEventListener("keydown",e=>{
 document.addEventListener("keypress",e=>{if(e.key==="Enter"&&e.target.classList.contains("entry"))openSheet(e.target.dataset.slug);});
 function tick(){$("#clock").textContent=new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})+" SAST";}
 tick();setInterval(tick,30000);
+function renderUpdates(){
+  const el=$("#updates-list");if(!el)return;
+  el.innerHTML=UPDATES.map(u=>'<li><time>'+esc(u.date)+'</time><span><b>'+esc(u.title)+'</b> · '+esc(u.text)+'</span></li>').join("");
+}
 async function boot(){
   await loadShipped();
   $("#m-total").textContent=REPOS.length;$("#m-public").textContent=REPOS.filter(r=>r.visibility==="Public").length;$("#m-local").textContent=REPOS.filter(r=>r.visibility==="Local").length;
-  render();
+  render();renderUpdates();
 }
 boot();
 </script>
